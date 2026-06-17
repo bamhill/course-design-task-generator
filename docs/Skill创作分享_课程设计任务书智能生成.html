@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill 创作分享 — 自动分配课程设计任务</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F9F8F6;--surface:#FFFFFF;--border:#E5E3DF;--border-strong:#C9C6C0;
+  --text:#2D2A27;--text-2:#7D7974;--text-3:#B0ACA6;
+  --accent:#2B5F8A;--accent-light:#7BA5C8;--gold:#B8860B;--green:#3A8A5E;
+  --font-display:'Noto Serif SC',Georgia,serif;
+  --font-body:'Inter Tight',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --s-4:16px;--s-5:24px;--s-6:32px;--s-7:48px;--s-8:64px;
+  --r-sm:6px;--r-md:10px;--r-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);font-size:15px;line-height:1.7;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+.wrap{max-width:820px;margin:0 auto;padding:0 var(--s-5)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(249,248,246,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:56px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:15px;font-weight:700}
+.brand-mark{width:26px;height:26px;border-radius:6px;background:var(--accent);display:grid;place-items:center;font-family:var(--font-mono);font-size:12px;font-weight:700;color:#fff}
+.nav-links{display:flex;gap:var(--s-5);font-size:12.5px;color:var(--text-2)}
+.nav-links a{color:inherit;text-decoration:none}
+.nav-links a:hover{color:var(--accent)}
+.hero{padding:var(--s-8)0 var(--s-7);border-bottom:1px solid var(--border)}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--border);border-radius:100px;font-size:11px;color:var(--text-3);margin-bottom:var(--s-5)}
+.hero-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.hero-title{font-family:var(--font-display);font-size:clamp(28px,4vw,44px);font-weight:900;line-height:1.15;color:var(--text)}
+.hero-meta{display:flex;gap:var(--s-6);margin-top:var(--s-5);flex-wrap:wrap;font-size:13px;color:var(--text-2)}
+.content{padding:var(--s-7)0 var(--s-8)}
+.content h2{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--text);margin:var(--s-7)0 var(--s-4);padding-bottom:8px;border-bottom:2px solid var(--accent)}
+.content h3{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text);margin:var(--s-6)0 var(--s-3)}
+.content h4{font-size:15px;font-weight:600;color:var(--accent);margin:var(--s-5)0 var(--s-2)}
+.content p{margin-bottom:var(--s-4);color:var(--text)}
+.content ul,.content ol{margin:var(--s-3)0 var(--s-4) var(--s-5);line-height:1.7}
+.content li{margin-bottom:4px}
+.content table{width:100%;border-collapse:collapse;margin:var(--s-4)0;font-size:13px}
+.content th,.content td{border:1px solid var(--border);padding:8px 10px;text-align:left}
+.content th{background:var(--bg-2);font-weight:600;font-size:12.5px}
+.content pre{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:var(--s-4);font-family:var(--font-mono);font-size:12.5px;line-height:1.6;overflow-x:auto;margin:var(--s-4)0;color:var(--text)}
+.content code{font-family:var(--font-mono);font-size:13px}
+.content pre code{font-size:12.5px}
+.content hr{border:none;border-top:1px solid var(--border);margin:var(--s-7)0}
+.content .highlight{border-left:4px solid var(--accent);background:var(--bg-2);padding:var(--s-4)var(--s-5);border-radius:0 var(--r-sm) var(--r-sm) 0;margin:var(--s-4)0}
+.content .highlight p{margin-bottom:0}
+.tag{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500;margin-right:4px}
+.tag-orange{background:rgba(184,134,11,0.1);color:var(--gold)}
+.tag-blue{background:rgba(43,95,138,0.1);color:var(--accent)}
+.footer{border-top:1px solid var(--border);padding:var(--s-6)0;text-align:center;font-size:12px;color:var(--text-3)}
+.footer a{color:var(--accent);text-decoration:none}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.rise{animation:rise 0.5s cubic-bezier(0.15,0.85,0.25,1) backwards}
+.rise-1{animation-delay:0.05s}.rise-2{animation-delay:0.1s}.rise-3{animation-delay:0.15s}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-inner">
+<div class="brand"><div class="brand-mark">课</div><div class="brand-text"><strong>课程设计任务</strong>智能分配</div></div>
+<div class="nav-links"><a href="#intro">简介</a><a href="#scenario">场景</a><a href="#process">创作</a><a href="#usage">使用</a><a href="#showcase">效果</a><a href="#link">链接</a></div>
+</div></nav>
+
+<section class="hero"><div class="wrap">
+<div class="hero-tag rise rise-1"><span class="dot"></span>SOLO 技能创作赛</div>
+<h1 class="hero-title rise rise-2">我做了一个"自动分配课程设计任务"的 Skill</h1>
+<div class="hero-meta rise rise-3">
+<span>📅 2026-05-18</span>
+<span>👤 大话数据分析</span>
+<span>🏷️ <span class="tag tag-orange">Skill创作</span><span class="tag tag-blue">课程设计</span><span class="tag tag-blue">教育</span></span>
+</div>
+</div></section>
+
+<section class="content"><div class="wrap">
+
+<h2 id="intro">1、Skill 简介</h2>
+
+<p><strong>课程设计任务智能分配系统</strong> 是一个让同一门课的<strong>多位老师都能个性化生成自己的课程设计任务书</strong>的 Claude Code Skill + Web 工具组合。核心逻辑：<strong>同一个固定大纲，不同老师填不同需求，生成属于自己班的任务书</strong>。</p>
+
+<p>你只需要在网页上填写自己班的班级人数、教学倾向和任务分配策略，系统就会自动生成：</p>
+
+<ul>
+<li><strong>每位学生的个性化课程设计任务书</strong>（WORD 版）</li>
+<li><strong>教师分配总表</strong>（谁做了什么任务一目了然）</li>
+<li><strong>优化总结报告</strong>（修改了什么、为什么改、对比表）</li>
+</ul>
+
+<p><strong>适合谁用</strong>：高校同一门课由多位老师平行授课的场景——每位老师都有自己的教学风格和侧重点，需要在自己的班级里自由发挥，但大纲是统一的。</p>
+
+<hr>
+
+<h2 id="scenario">2、使用场景</h2>
+
+<h3>为什么想做它？</h3>
+
+<p>一位老师的真实日常：</p>
+
+<ul>
+<li><strong>同一门课，多位老师教</strong>：计算机网络课设，信管专业 3 位老师各带不同班级</li>
+<li><strong>每位老师的风格不同</strong>：张老师侧重动手、李老师侧重理论、王老师项目导向</li>
+<li><strong>学生水平也不一样</strong>：有的班 35 人，有的班 70 人，有的需要分层</li>
+<li><strong>但大纲是同一份</strong>：不能用同一份任务书应付所有班</li>
+<li><strong>今年教完明年还教</strong>：同样的课、同样的老师，但学生换了、时间变了</li>
+<li><strong>去年的任务书不能直接用</strong>：改年份、调题目、换班级，几乎重写</li>
+</ul>
+
+<div class="highlight">
+<p><strong>刚需</strong>：多位老师共用同一份大纲，各自生成自己班的个性化任务书。</p>
+</div>
+
+<h3>之前遇到的麻烦</h3>
+
+<table>
+<thead><tr><th>痛点</th><th>具体表现</th></tr></thead>
+<tbody>
+<tr><td><strong>任务分配难</strong></td><td>70 人不能做一样的题目，但出 10+ 个不同题目太累</td></tr>
+<tr><td><strong>任务书撰写繁</strong></td><td>每个题目都要写任务书，七八份写到手软</td></tr>
+<tr><td><strong>格式统一难</strong></td><td>不同题目的任务书风格各不同，学生看糊涂</td></tr>
+<tr><td><strong>思政融入硬</strong></td><td>要求体现课程思政，但每道题怎么自然融入</td></tr>
+<tr><td><strong>不区分学生差异</strong></td><td>优等生和基础弱的用同一份任务</td></tr>
+<tr><td><strong>优化无记录</strong></td><td>改了几版没有文档记录，教务检查拿不出依据</td></tr>
+</tbody>
+</table>
+
+<h3>做出来之后省掉了什么</h3>
+
+<table>
+<thead><tr><th>之前</th><th>现在</th></tr></thead>
+<tbody>
+<tr><td>手动出 10+ 题目 + 写 70 份任务书：2-3 天</td><td>Web 填参数，自动分配，一键出所有文件</td></tr>
+<tr><td>思政硬写：每题 30 分钟</td><td>自动按阶段融入，正反例对照</td></tr>
+<tr><td>优化靠微信记录</td><td>自动输出优化总结报告 + 对比表</td></tr>
+<tr><td>不区分学生差异</td><td>支持分层：基础题 / 标准题 / 挑战题</td></tr>
+<tr><td>下一年重新来</td><td>改一改参数，复用全部模板</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2 id="process">3、创作过程</h2>
+
+<h3>核心思路</h3>
+
+<p>整个系统的架构分 3 层：</p>
+
+<pre><code>数据层 → 分配引擎 → 输出层
+固定大纲 + 教师需求 + 思政参考 → 任务分配规则 + 分层策略 → WORD 任务书 + 分配总表 + 优化报告</code></pre>
+
+<div class="highlight">
+<p><strong>关键创新</strong>：不是"生成一份任务书"，而是"为 N 个学生/小组分别分配不同的设计任务"。</p>
+</div>
+
+<h3>Step 1：选择数据源</h3>
+
+<p>最终选择 <strong>固定大纲 + Web 网页 + 对话式</strong>：</p>
+<ul>
+<li>理论大纲和课设大纲作为骨架</li>
+<li>教师通过 Web 网页填写需求（不上手代码）</li>
+<li>思政参考文档提供写作模式</li>
+</ul>
+
+<h3>网页设计：教师先用 Web 完成任务分配</h3>
+
+<p>入口是一个暖白学术风的 Web 页面（<code>web_app/</code>），教师通过它完成<strong>任务分配 + 需求录入 + 文件下载</strong>：</p>
+
+<ul>
+<li><strong>选择课程</strong>：计算机网络 / 数据库原理与应用</li>
+<li><strong>填写班级信息</strong>：专业、班级、人数</li>
+<li><strong>选择任务分配策略</strong>：全部相同 / 不同题目 / 分层分配（基础/标准/挑战）</li>
+<li><strong>设置题目数量和分组方式</strong></li>
+<li><strong>上传补充材料（可选）</strong>：支持文件拖拽上传</li>
+<li><strong>一键生成</strong>：后端自动分配 → 打包下载所有 WORD 文件</li>
+</ul>
+
+<h3>Step 2：设计思政融入</h3>
+
+<p>目标：<strong>自然融入、不硬贴标签、正反例对照</strong>。</p>
+
+<table>
+<thead><tr><th>阶段</th><th>思政点</th><th>正例</th><th>反例</th></tr></thead>
+<tbody>
+<tr><td>需求分析</td><td>数据安全意识</td><td>引导讨论数据保密</td><td>直接给真实企业数据</td></tr>
+<tr><td>概念设计</td><td>系统思维</td><td>E-R 图展示全局数据流转</td><td>只做单表设计</td></tr>
+<tr><td>逻辑设计</td><td>工程严谨</td><td>规范化分析不能跳</td><td>直接给完整表结构</td></tr>
+<tr><td>数据库实现</td><td>工匠精神</td><td>要求代码注释和规范命名</td><td>运行就行</td></tr>
+<tr><td>功能调试</td><td>数据完整性底线</td><td>去掉约束演示后果</td><td>直接告诉答案</td></tr>
+<tr><td>团队协作</td><td>责任意识</td><td>答辩追问模块间影响</td><td>只收个人报告</td></tr>
+</tbody>
+</table>
+
+<h3>Step 3：两步流程</h3>
+
+<pre><code>第一步：教师给需求 + 选分配策略 → 自动生成学生任务书 + 分配总表
+                        ↓
+第二步：教师审阅后提优化需求 → 输出优化报告 + 对比表 + 定稿</code></pre>
+
+<h3>Step 4：生成 WORD</h3>
+
+<p>用 <code>python-docx</code> 生成带格式的 WORD 文档，宋体 11pt、表格居中、思政提示蓝字标注，可直接提交教务处。</p>
+
+<hr>
+
+<h2 id="usage">4、使用步骤</h2>
+
+<div style="background:rgba(43,95,138,0.06);border:2px solid var(--accent);border-radius:var(--r-lg);padding:var(--s-5);margin-bottom:var(--s-6)">
+  <div style="display:flex;align-items:center;gap:var(--s-3);margin-bottom:var(--s-4)">
+    <span style="background:var(--accent);color:#fff;border-radius:100px;padding:2px 10px;font-size:11px;font-weight:600">推荐</span>
+    <span style="font-family:var(--font-display);font-size:20px;font-weight:700">对话式（零门槛，推荐）</span>
+  </div>
+  <p>教师直接在 Claude Code 中说：</p>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:var(--s-4);font-family:var(--font-mono);font-size:13px;line-height:2;margin:var(--s-3)0">
+    <div>"@course-design-task-generator 帮我分配计算机网络课程设计任务，信管 2024 级 70 人，分 10 个不同题目"</div>
+    <div style="color:var(--text-3);margin-top:8px">// 或者更简单的：</div>
+    <div>"帮我生成计网课设任务书，信管 2024 级 70 人"</div>
+    <div>"生成数据库原理与应用的课设任务书，信管专业 42 人"</div>
+    <div>"第二步优化：概念设计阶段拆成两天，平时考核调成 30%"</div>
+  </div>
+</div>
+
+<h3>网页版（适合不熟悉命令行的老师）</h3>
+
+<pre><code>部署到服务器后：
+打开网页 → 选课程 → 填班级/人数 → 选分配策略 → 一键生成 → 下载所有 WORD</code></pre>
+
+<p>本地运行：</p>
+
+<pre><code>pip install fastapi uvicorn python-multipart python-docx
+cd web_app
+uvicorn main:app --host 0.0.0.0 --port 8000</code></pre>
+
+<h3>命令行直接运行</h3>
+
+<pre><code>git clone https://github.com/bamhill/course-design-task-generator.git
+pip install python-docx
+python scripts/generate_cntask_doc.py</code></pre>
+
+<hr>
+
+<h2 id="showcase">5、效果展示</h2>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s-4);margin:var(--s-4)0">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-5);text-align:center">
+    <div style="font-size:36px;margin-bottom:var(--s-3)">🏠</div>
+    <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--accent)">首页 · 原型</div>
+    <div style="font-size:12px;color:var(--text-2);margin-top:6px">暖白学术风 · 拖拽上传 · 两步流程</div>
+    <div style="margin-top:var(--s-4);padding:var(--s-3);background:var(--bg-2);border-radius:var(--r-md);font-family:var(--font-mono);font-size:11px;color:var(--text-2);text-align:left">
+      课程设计任务书智能生成<br>
+      <span style="color:var(--accent)">📂</span> 拖拽文档到此处<br>
+      <span style="color:var(--green)">●</span> 已就绪：理论大纲、课设大纲
+    </div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-5);text-align:center">
+    <div style="font-size:36px;margin-bottom:var(--s-3)">📋</div>
+    <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--accent)">需求录入 · 表单</div>
+    <div style="font-size:12px;color:var(--text-2);margin-top:6px">学生情况 · 教学倾向 · 资源环境</div>
+    <div style="margin-top:var(--s-4);padding:var(--s-3);background:var(--bg-2);border-radius:var(--r-md);font-family:var(--font-mono);font-size:11px;color:var(--text-2);text-align:left">
+      专业班级：信管 2024 级<br>
+      人数：70 人<br>
+      重点倾向：动手实践<br>
+      分配策略：分 10 个不同题目
+    </div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-5);text-align:center">
+    <div style="font-size:36px;margin-bottom:var(--s-3)">⚙️</div>
+    <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--accent)">规则引擎</div>
+    <div style="font-size:12px;color:var(--text-2);margin-top:6px">学时自适应 · 专业适配 · 思政注入</div>
+    <div style="margin-top:var(--s-4);padding:var(--s-3);background:var(--bg-2);border-radius:var(--r-md);font-family:var(--font-mono);font-size:11px;color:var(--text-2);text-align:left">
+      RULE 01 学时自适应分档<br>
+      RULE 02 专业差异适配<br>
+      RULE 03 思政案例自动注入
+    </div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-5);text-align:center">
+    <div style="font-size:36px;margin-bottom:var(--s-3)">📄</div>
+    <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--accent)">优化需求 · 第二步</div>
+    <div style="font-size:12px;color:var(--text-2);margin-top:6px">逐条录入 · 三份输出</div>
+    <div style="margin-top:var(--s-4);padding:var(--s-3);background:var(--bg-2);border-radius:var(--r-md);font-family:var(--font-mono);font-size:11px;color:var(--text-2);text-align:left">
+      #1 概念设计拆成两天<br>
+      #2 平时考核调到 30%<br>
+      输出：报告 + 对比表 + 定稿
+    </div>
+  </div>
+</div>
+
+<h3>两步流程</h3>
+
+<div style="display:grid;grid-template-columns:1fr 40px 1fr;gap:var(--s-4);margin:var(--s-4)0">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-5)">
+    <div style="font-size:32px;margin-bottom:8px">①</div>
+    <div style="font-family:var(--font-display);font-size:17px;font-weight:700">自动生成</div>
+    <div style="font-size:12.5px;color:var(--text-2);margin-top:8px;line-height:1.6">
+      教师填写：<br>
+      学生维度（专业/班级/分层）<br>
+      教学维度（重点/考核/项目）<br>
+      资源维度（DB 环境/教材）<br>
+      <strong style="color:var(--text)">→ 出初版任务书</strong>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--accent)">→</div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-5)">
+    <div style="font-size:32px;margin-bottom:8px">②</div>
+    <div style="font-family:var(--font-display);font-size:17px;font-weight:700">教师优化</div>
+    <div style="font-size:12.5px;color:var(--text-2);margin-top:8px;line-height:1.6">
+      逐条提优化需求 →<br>
+      <strong style="color:var(--text)">① 优化总结报告</strong><br>
+      <strong style="color:var(--text)">② 改动对比表</strong><br>
+      <strong style="color:var(--text)">③ 任务书定稿</strong>
+    </div>
+  </div>
+</div>
+
+<h3>生成的 WORD 任务书</h3>
+
+<div style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-5);margin:var(--s-4)0;font-family:var(--font-display);font-size:15px;line-height:2">
+  <div style="text-align:center;font-weight:700;border-bottom:1px solid var(--border);padding-bottom:var(--s-3)">《计算机网络课程设计》课程设计任务书</div>
+  <div style="font-size:12.5px;font-family:var(--font-body)">
+    <div style="margin-top:var(--s-3)"><strong>一、课程设计目标</strong> · 设计能力 + 配置能力 + 应用与安全</div>
+    <div><strong>二、设计任务</strong> · 方案设计 → 网络搭建 → 应用服务 → 答辩</div>
+    <div><strong>三、进度安排</strong> · 5 天详细表</div>
+    <div><strong>四、思政融合</strong> · 4 个融入点（工程标准/职业责任/技术自主/协作）</div>
+    <div><strong>五、考核标准</strong> · 平时 40% + 答辩 20% + 报告 40%</div>
+    <div><strong>六、交付物清单</strong> · 7 项交付物</div>
+    <div style="color:var(--accent);font-style:italic">💡 思政融入提示：蓝字标注，融入在教学要求中</div>
+  </div>
+</div>
+
+<h3>优化报告 + 对比表</h3>
+
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-5);margin:var(--s-4)0">
+  <div style="font-family:var(--font-mono);font-size:12px;line-height:2">
+    <div><span style="color:var(--text-3)">#1</span> 交付物增加网络拓扑截图 <span style="color:var(--green)">●</span></div>
+    <div><span style="color:var(--text-3)">#2</span> 写入遇到的问题及解决方案 <span style="color:var(--green)">●</span></div>
+    <div><span style="color:var(--text-3)">#3</span> 经费预算改为必做 <span style="color:var(--green)">●</span></div>
+  </div>
+  <div style="margin-top:var(--s-4);border-top:1px solid var(--border);padding-top:var(--s-4);font-size:12px">
+    <table style="width:100%;font-size:11.5px">
+      <tr><th style="width:15%">#</th><th style="width:30%">位置</th><th>改前</th><th>改后</th></tr>
+      <tr><td>1</td><td>§六 交付物</td><td>无拓扑截图</td><td>增加网络拓扑图</td></tr>
+      <tr><td>2</td><td>§三+§六</td><td>不要求问题记录</td><td>增加"问题与解决"章节</td></tr>
+      <tr><td>3</td><td>§二 阶段1</td><td>经费预算"选做"</td><td>改为必做</td></tr>
+    </table>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="link">6、Skill 链接</h2>
+
+<p><strong>GitHub 仓库（公开）</strong>：<a href="https://github.com/bamhill/course-design-task-generator" target="_blank">https://github.com/bamhill/course-design-task-generator</a></p>
+
+<p><strong>ZIP 包</strong>：仓库内包含 SKILL.md + 脚本 + 大纲 + 示例输出 + web_app/</p>
+
+<hr>
+
+<h2>7、总结与思考</h2>
+
+<table>
+<thead><tr><th>指标</th><th>之前</th><th>现在</th></tr></thead>
+<tbody>
+<tr><td>分配任务 + 写任务书</td><td>2-3 天手动</td><td>10 秒自动</td></tr>
+<tr><td>融入思政</td><td>1 小时硬写</td><td>自动生成正反例</td></tr>
+<tr><td>优化报告</td><td>靠微信记录</td><td>自动输出对比表</td></tr>
+</tbody>
+</table>
+
+<br>
+<div class="highlight">
+<p>仓库地址：<a href="https://github.com/bamhill/course-design-task-generator" target="_blank">https://github.com/bamhill/course-design-task-generator</a></p>
+</div>
+
+</div></section>
+
+<footer class="footer"><div class="wrap">
+© 2026 · 课程设计任务智能分配 · <a href="https://github.com/bamhill/course-design-task-generator" target="_blank">GitHub</a> · 投稿至 TRAE 社区
+</div></footer>
+
+</body>
+</html>
