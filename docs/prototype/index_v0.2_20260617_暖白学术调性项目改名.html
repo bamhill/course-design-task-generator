@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>课程设计文档生成 — 以「数据库原理与应用」为例</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:#F9F8F6;--bg-2:#F4F2EE;--surface:#FFFFFF;--border:#E5E3DF;
+  --text:#2D2A27;--text-2:#7D7974;--text-3:#B0ACA6;
+  --accent:#2B5F8A;--gold:#B8860B;--green:#3A8A5E;
+  --font-display:'Noto Serif SC',Georgia,serif;
+  --font-body:'Inter Tight',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --s-4:16px;--s-5:24px;--s-6:32px;--s-7:48px;--s-9:96px;
+  --r-sm:6px;--r-md:10px;--r-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);font-size:15px;color:var(--text);background:var(--bg)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 var(--s-7)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(249,248,246,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--font-display);font-size:17px;font-weight:700}
+.brand-mark{width:28px;height:28px;border-radius:6px;background:var(--accent);display:grid;place-items:center;font-family:var(--font-mono);font-size:13px;font-weight:700;color:#fff}
+.nav-cta{padding:7px 16px;border:1px solid var(--accent);border-radius:var(--r-sm);font-size:12.5px;color:var(--accent);text-decoration:none}
+.hero{padding:var(--s-9)0 var(--s-8)}
+.hero-tag{display:inline-flex;padding:5px 12px;border:1px solid var(--border);border-radius:100px;font-size:11.5px;color:var(--text-2);background:var(--surface);margin-bottom:var(--s-7)}
+.hero-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero-title{font-family:var(--font-display);font-size:clamp(40px,5.5vw,72px);font-weight:900;line-height:1.1}
+.hero-title .sub{display:block;font-size:0.45em;font-weight:400;color:var(--text-2);margin-top:var(--s-4)}
+.hero-desc{font-size:15px;color:var(--text-2);max-width:600px;margin-top:var(--s-6)}
+.hero-course{display:inline-flex;align-items:center;gap:var(--s-4);padding:var(--s-4) var(--s-5);margin-top:var(--s-7);background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg)}
+.hero-course-icon{width:44px;height:44px;border-radius:var(--r-md);background:var(--accent);display:grid;place-items:center;color:#fff;font-size:18px}
+.hero-course-name{font-family:var(--font-display);font-size:16px;font-weight:700}
+.hero-course-meta{font-size:12px;color:var(--text-3);font-family:var(--font-mono)}
+.hero-stats{display:flex;gap:var(--s-8);margin-top:var(--s-7);padding-top:var(--s-6);border-top:1px solid var(--border)}
+.hero-stat-label{font-family:var(--font-mono);font-size:10.5px;color:var(--text-3);letter-spacing:0.06em}
+.hero-stat-value{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--accent)}
+.section{padding:var(--s-9)0}
+.section-tag{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.1em;margin-bottom:var(--s-3)}
+.section-title{font-family:var(--font-display);font-size:clamp(28px,3.5vw,44px);font-weight:700}
+.caps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-5);margin-top:var(--s-7)}
+.cap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-6)}
+.cap-title{font-family:var(--font-display);font-size:22px;font-weight:700}
+.preview-body{font-size:12.5px;line-height:1.75}
+.workflow{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-4);margin-top:var(--s-7)}
+.step{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-6)}
+.step-icon{width:40px;height:40px;border-radius:var(--r-md);background:var(--bg-2);border:1px solid var(--border);display:grid;place-items:center;font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--accent);margin-bottom:var(--s-4)}
+.step-title{font-family:var(--font-display);font-size:17px;font-weight:700}
+.rise{animation:rise 0.6s cubic-bezier(0.15,0.85,0.25,1) backwards}
+.rise-1{animation-delay:0.05s}.rise-2{animation-delay:0.1s}.rise-3{animation-delay:0.15s}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="wrap nav-inner">
+<div class="brand"><div class="brand-mark">课</div><div class="brand-text"><strong>课程设计文档</strong>生成</div></div>
+<a href="#showcase" class="nav-cta">开始生成 →</a>
+</div></nav>
+
+<section class="hero"><div class="wrap">
+<div class="hero-tag"><span class="dot"></span>通用课程设计文档生成平台</div>
+<h1 class="hero-title">课程设计文档生成<span class="sub">将教学大纲+教案+考核方案结构化为 JSON，一键渲染为标准课程设计文档</span></h1>
+<p class="hero-desc">以「<strong>数据库原理与应用</strong>」为示范课程。<br>3 个数据文件 → 1 份可提交的课程设计文档。</p>
+<div class="hero-course"><div class="hero-course-icon">DB</div>
+<div><div class="hero-course-name">数据库原理与应用</div><div class="hero-course-meta">04042603a · 3 学分 · 48 学时（理论 38 + 实验 10）</div></div></div>
+<div class="hero-stats">
+<div><div class="hero-stat-label">数据源</div><div class="hero-stat-value">3</div></div>
+<div><div class="hero-stat-label">规则引擎</div><div class="hero-stat-value">4</div></div>
+<div><div class="hero-stat-label">输出格式</div><div class="hero-stat-value">2</div></div>
+<div><div class="hero-stat-label">状态</div><div class="hero-stat-value">原型</div></div>
+</div></div></section>
+
+<section style="text-align:center;padding:var(--s-6)0;border-top:1px solid var(--border)">
+<div class="wrap"><p style="color:var(--text-2);font-size:13px">⚠ 此为 v0.2 存档版 · v0.1 见 index_v0.1_* · v0.3 见 index_v0.3_*</p></div></section>
+
+<section><div class="wrap"><div class="section-tag">核心能力</div>
+<div class="caps">
+<div class="cap"><div class="cap-title">结构化数据</div></div>
+<div class="cap"><div class="cap-title">OBE × 学情分层</div></div>
+<div class="cap"><div class="cap-title">MD + Docx</div></div>
+</div></div></section>
+
+<script>console.log('课程设计文档生成 · v0.2 存档');</script>
+</body>
+</html>

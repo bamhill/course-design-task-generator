@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>课程设计文档生成 — 以「数据库原理与应用」为例</title>
+
+<!-- Preconnect + Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  /* Surface — warm academic light */
+  --bg: #F9F8F6;
+  --bg-2: #F4F2EE;
+  --surface: #FFFFFF;
+  --surface-2: #FAF9F7;
+  --border: #E5E3DF;
+  --border-strong: #C9C6C0;
+
+  /* Text */
+  --text: #2D2A27;
+  --text-2: #7D7974;
+  --text-3: #B0ACA6;
+  --text-muted: #D0CDC7;
+
+  /* Accents */
+  --accent: #2B5F8A;       /* academic blue */
+  --accent-soft: #4A82B0;
+  --accent-light: #7BA5C8;
+  --gold: #B8860B;          /* academic gold */
+  --gold-soft: #D4A847;
+  --green: #3A8A5E;
+  --red: #C9544A;
+
+  /* Typography */
+  --font-display: 'Noto Serif SC', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Spacing scale */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px;
+  --s-4: 16px; --s-5: 24px; --s-6: 32px;
+  --s-7: 48px; --s-8: 64px; --s-9: 96px; --s-10: 128px;
+
+  /* Radius */
+  --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-xl: 24px;
+
+  /* Shadows */
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-2: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 var(--s-7); }
+@media (max-width: 768px) { .wrap { padding: 0 var(--s-5); } }
+
+/* NAV */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(249,248,246,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+.brand {
+  display: flex; align-items: center; gap: var(--s-3);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+.brand-mark {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  background: var(--accent);
+  display: grid; place-items: center;
+  font-family: var(--font-mono);
+  font-size: 13px; font-weight: 700;
+  color: #fff;
+}
+.nav-links {
+  display: flex; gap: var(--s-6);
+  font-size: 13px;
+  color: var(--text-2);
+}
+.nav-links a { color: inherit; text-decoration: none; }
+.nav-links a:hover { color: var(--accent); }
+.nav-cta {
+  padding: 7px 16px;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  font-size: 12.5px; font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.nav-cta:hover { background: var(--accent); color: #fff; }
+
+/* HERO — new light academic */
+.hero {
+  padding: var(--s-9) 0 var(--s-8);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 85% 20%, rgba(43,95,138,0.04), transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(184,134,11,0.03), transparent 50%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 11.5px;
+  color: var(--text-2);
+  background: var(--surface);
+  margin-bottom: var(--s-7);
+}
+.hero-tag .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4vw, 52px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  max-width: 720px;
+}
+.hero-title .sub {
+  display: block;
+  font-size: 0.45em;
+  font-weight: 400;
+  color: var(--text-2);
+  margin-top: var(--s-4);
+}
+.hero-desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 600px;
+  margin-top: var(--s-6);
+}
+
+.hero-course {
+  display: inline-flex; align-items: center; gap: var(--s-4);
+  padding: var(--s-4) var(--s-5);
+  margin-top: var(--s-7);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+.hero-course-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--r-md);
+  background: var(--accent);
+  display: grid; place-items: center;
+  color: #fff; font-size: 18px;
+}
+.hero-course-info { display: flex; flex-direction: column; gap: 2px; }
+.hero-course-name {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.hero-course-meta {
+  font-size: 12px;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+}
+.hero-stats {
+  display: flex; gap: var(--s-8);
+  margin-top: var(--s-7);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--border);
+}
+.hero-stat { display: flex; flex-direction: column; gap: 2px; }
+.hero-stat-label {
+  font-family: var(--font-mono); font-size: 10.5px;
+  color: var(--text-3); letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hero-stat-value {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 700;
+  color: var(--accent); line-height: 1;
+}
+
+/* SECTION */
+.section { padding: var(--s-9) 0; }
+.section-tag {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--accent); letter-spacing: 0.1em;
+  margin-bottom: var(--s-3);
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.15;
+}
+.section-sub {
+  font-size: 14.5px;
+  color: var(--text-2);
+  max-width: 600px;
+  margin-top: var(--s-4);
+  line-height: 1.65;
+}
+
+/* CAPABILITIES */
+.caps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-5);
+  margin-top: var(--s-7);
+}
+@media (max-width: 900px) { .caps { grid-template-columns: 1fr; } }
+.cap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-6);
+  transition: all 0.2s;
+}
+.cap:hover {
+  border-color: var(--accent); box-shadow: var(--shadow-2);
+}
+.cap-num {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--accent); letter-spacing: 0.08em;
+}
+.cap-title {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 700;
+  color: var(--text); margin-top: var(--s-4);
+  line-height: 1.2;
+}
+.cap-desc {
+  font-size: 13.5px; color: var(--text-2);
+  line-height: 1.7; margin-top: var(--s-4);
+}
+
+/* SHOWCASE */
+.showcase {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-6);
+  margin-top: var(--s-7);
+}
+@media (max-width: 1024px) { .showcase { grid-template-columns: 1fr; } }
+
+.showcase-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-6);
+}
+.showcase-card .code {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text-3); letter-spacing: 0.02em;
+}
+.showcase-card .name {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 700;
+  color: var(--text); margin-top: var(--s-2);
+}
+.showcase-card .tagline {
+  font-size: 13.5px; color: var(--text-2);
+  line-height: 1.65; margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--border);
+}
+
+.unit-list { margin-top: var(--s-5); display: flex; flex-direction: column; gap: var(--s-2); }
+.unit {
+  display: grid;
+  grid-template-columns: 32px 1fr 48px;
+  align-items: center; gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg-2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.unit:hover { border-color: var(--accent); }
+.unit-num {
+  font-family: var(--font-display); font-size: 18px;
+  font-weight: 700; color: var(--accent);
+}
+.unit-name { font-size: 13px; font-weight: 600; }
+.unit-meta { font-size: 11px; color: var(--text-3); }
+.unit-hours { text-align: right; font-family: var(--font-mono); font-size: 13px; font-weight: 500; }
+
+/* PREVIEW PANE */
+.preview-pane {
+  background: #fff; color: #2D2A27;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.preview-head {
+  padding: var(--s-3) var(--s-5);
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: var(--s-3);
+  font-family: var(--font-mono); font-size: 11.5px; color: var(--text-2);
+}
+.preview-head .live { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.preview-body {
+  padding: var(--s-6) var(--s-6);
+  font-size: 12.5px; line-height: 1.75;
+  flex: 1; overflow-y: auto; min-height: 400px;
+}
+.preview-body .doc-title {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 700;
+  text-align: center; margin-bottom: 4px;
+}
+.preview-body .doc-sub {
+  text-align: center; font-size: 11px; color: var(--text-3);
+  margin-bottom: var(--s-5);
+}
+.preview-body .doc-table {
+  width: 100%; border-collapse: collapse; margin-bottom: var(--s-4); font-size: 11px;
+}
+.preview-body .doc-table th, .preview-body .doc-table td {
+  border: 1px solid var(--border); padding: 5px 8px; text-align: left;
+}
+.preview-body .doc-table th {
+  background: var(--bg-2); font-weight: 600; width: 28%;
+}
+.preview-body h3 {
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  margin-top: var(--s-5); margin-bottom: var(--s-3);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+}
+.preview-body h4 { font-size: 13px; font-weight: 700; margin-top: var(--s-4); }
+.preview-body p { margin-bottom: var(--s-3); }
+.preview-body ul { margin-left: var(--s-5); margin-bottom: var(--s-3); }
+.preview-body ul li { margin-bottom: 2px; }
+.preview-body .sql {
+  font-family: var(--font-mono); font-size: 11px;
+  background: var(--bg-2); padding: var(--s-3);
+  border-radius: var(--r-sm); margin: var(--s-3) 0;
+  border-left: 3px solid var(--accent);
+  white-space: pre-wrap;
+}
+.preview-body .tag {
+  display: inline-block; padding: 1px 6px; border-radius: 3px;
+  font-family: var(--font-mono); font-size: 9.5px;
+  background: rgba(43,95,138,0.08); color: var(--accent);
+  margin-right: 3px;
+}
+.preview-body .tag.ai { background: rgba(184,134,11,0.08); color: var(--gold); }
+.preview-body .tag.sipin { background: rgba(58,138,94,0.08); color: var(--green); }
+.preview-body .placeholder {
+  display: inline-block; padding: 3px 8px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 4px; color: var(--text-3);
+  font-size: 10.5px; font-style: italic;
+}
+
+/* WORKFLOW */
+.workflow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-4);
+  margin-top: var(--s-7);
+}
+@media (max-width: 1024px) { .workflow { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .workflow { grid-template-columns: 1fr; } }
+.step {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-6);
+}
+.step-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--r-md);
+  background: var(--bg-2);
+  display: grid; place-items: center;
+  font-family: var(--font-display); font-size: 20px;
+  font-weight: 700; color: var(--accent);
+  margin-bottom: var(--s-4);
+}
+.step-num {
+  font-family: var(--font-mono); font-size: 10.5px;
+  color: var(--text-3); letter-spacing: 0.08em;
+}
+.step-title {
+  font-family: var(--font-display);
+  font-size: 17px; font-weight: 700;
+  color: var(--text); margin-top: var(--s-2);
+  line-height: 1.25;
+}
+.step-desc {
+  font-size: 12.5px; color: var(--text-2);
+  line-height: 1.6; margin-top: var(--s-3);
+}
+
+/* DROP ZONE */
+.drop-zone {
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--r-lg);
+  padding: var(--s-8) var(--s-6);
+  text-align: center;
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: var(--s-7);
+}
+.drop-zone:hover, .drop-zone.dragover {
+  border-color: var(--accent);
+  background: rgba(43,95,138,0.03);
+}
+.drop-zone-icon {
+  font-size: 36px; margin-bottom: var(--s-3);
+}
+.drop-zone-title {
+  font-family: var(--font-display); font-size: 17px; font-weight: 700;
+  color: var(--text);
+}
+.drop-zone-sub {
+  font-size: 13px; color: var(--text-2); margin-top: var(--s-2);
+}
+.drop-zone-files {
+  display: flex; gap: var(--s-4); justify-content: center;
+  margin-top: var(--s-5); flex-wrap: wrap;
+}
+.drop-file {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: 12px;
+}
+.drop-file .icon { font-size: 20px; }
+.drop-file .name { font-weight: 600; }
+.drop-file .type { color: var(--text-3); font-family: var(--font-mono); font-size: 11px; }
+
+/* Example code block */
+.example-code pre { line-height: 1.7; }
+
+/* RULES */
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-5); margin-top: var(--s-7);
+}
+@media (max-width: 900px) { .rules-grid { grid-template-columns: 1fr; } }
+.rule {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-6);
+}
+.rule-num {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--accent); letter-spacing: 0.06em;
+}
+.rule-title {
+  font-family: var(--font-display);
+  font-size: 17px; font-weight: 700;
+  color: var(--text); margin-top: var(--s-3);
+}
+.rule-body {
+  font-size: 13px; color: var(--text-2);
+  line-height: 1.6; margin-top: var(--s-3);
+}
+.rule-code {
+  font-family: var(--font-mono); font-size: 11px;
+  background: var(--bg-2); padding: var(--s-3); border-radius: var(--r-sm);
+  border: 1px solid var(--border); margin-top: var(--s-4);
+  white-space: pre-wrap;
+}
+.rule-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px; border-radius: 100px;
+  font-family: var(--font-mono); font-size: 10px;
+  margin-top: var(--s-3); letter-spacing: 0.03em;
+}
+.rule-status.active { background: rgba(58,138,94,0.08); color: var(--green); }
+.rule-status.planned { background: rgba(43,95,138,0.08); color: var(--accent); }
+
+/* EXPORT */
+.export-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-4);
+  margin-top: var(--s-7);
+}
+@media (max-width: 768px) { .export-list { grid-template-columns: 1fr; } }
+.export-item {
+  display: flex; align-items: center; gap: var(--s-5);
+  padding: var(--s-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.export-item:hover { border-color: var(--accent); }
+.export-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--r-md);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  display: grid; place-items: center;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  color: var(--accent);
+}
+.export-name { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text); }
+.export-meta { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-3); }
+.export-action {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: 11px;
+  padding: 5px 10px; border: 1px solid var(--border);
+  border-radius: 4px; color: var(--accent);
+}
+
+/* FOOTER */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: var(--s-7) 0;
+  margin-top: var(--s-8);
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; gap: var(--s-4);
+}
+.footer-meta {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-3);
+}
+.footer-meta a { color: var(--accent); text-decoration: none; }
+
+/* UTILITY */
+.rise { animation: rise 0.6s cubic-bezier(0.15,0.85,0.25,1) backwards; }
+.rise-1 { animation-delay: 0.05s; }
+.rise-2 { animation-delay: 0.1s; }
+.rise-3 { animation-delay: 0.15s; }
+.rise-4 { animation-delay: 0.2s; }
+.rise-5 { animation-delay: 0.25s; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <div class="brand-mark">课</div>
+      <div class="brand-text"><strong>课程设计文档</strong>生成</div>
+    </div>
+    <div class="nav-links">
+      <a href="#showcase">示范</a>
+      <a href="#workflow">工作流</a>
+      <a href="#rules">规则引擎</a>
+      <a href="#export">导出</a>
+    </div>
+    <a href="#showcase" class="nav-cta">开始生成 →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-tag rise rise-1">
+      <span class="dot"></span>
+      <span>信息管理与信息系统 · 课程设计任务书智能生成</span>
+    </div>
+
+    <h1 class="hero-title rise rise-2">
+      课程设计任务书<span style="color:var(--accent)">智能生成</span>
+      <span class="sub">固定教学大纲 + 教师个性化需求 → 两步生成可提交的课程设计任务书</span>
+    </h1>
+
+    <p class="hero-desc rise rise-3">
+      以「<strong>数据库原理与应用（SQL-Server）实践</strong>」为示范课程。<br>
+      先出初版任务书，再按老师优化需求输出优化总结报告 + 对比表 + 定稿。
+    </p>
+
+    <div class="hero-course rise rise-4">
+      <div class="hero-course-icon">DB</div>
+      <div class="hero-course-info">
+        <div class="hero-course-name">数据库原理与应用（SQL-Server）实践</div>
+        <div class="hero-course-meta">04040313b · 1 学分 · 1 周（16 学时）· 物资采购库存管理方向</div>
+      </div>
+    </div>
+
+    <div class="hero-stats rise rise-5">
+      <div class="hero-stat">
+        <div class="hero-stat-label">输入文档</div>
+        <div class="hero-stat-value">3</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">生成步骤</div>
+        <div class="hero-stat-value">2</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">产出文件</div>
+        <div class="hero-stat-value">3</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-label">思政</div>
+        <div class="hero-stat-value">本校特色</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAPABILITIES -->
+<section class="section" id="capabilities">
+  <div class="wrap">
+    <div class="section-tag">核心能力</div>
+    <h2 class="section-title">三层结构，数据驱动</h2>
+    <p class="section-sub">课程内容、教学设计、思政元素都被结构化为可重用的数据。改一份 JSON，就能换一门课。</p>
+
+    <div class="caps">
+      <div class="cap">
+        <div class="cap-num">01 — 数据层</div>
+        <h3 class="cap-title">结构化数据<br>JSON 驱动</h3>
+        <p class="cap-desc">课程信息、教学单元、思政案例库 — 所有内容写成 JSON。换课程只需替换数据文件。</p>
+      </div>
+      <div class="cap">
+        <div class="cap-num">02 — 规则引擎</div>
+        <h3 class="cap-title">OBE × 学情分层</h3>
+        <p class="cap-desc">按学时自动分档、按学情自动分层（高职/本科/研究生），按 OBE 矩阵自动映射毕业要求。</p>
+      </div>
+      <div class="cap">
+        <div class="cap-num">03 — 输出</div>
+        <h3 class="cap-title">MD + Docx</h3>
+        <p class="cap-desc">Markdown 预览可编辑，Docx 可直接提交教务处。保留所有表格、SQL 代码块、章节层级。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOWCASE -->
+<section class="section" id="showcase">
+  <div class="wrap">
+    <div class="section-tag">示范课程</div>
+    <h2 class="section-title">以「数据库原理与应用」为示范</h2>
+    <p class="section-sub">数据来自 2026 版课程教学大纲 + 最近一学期 24 次课教案。</p>
+
+    <div class="showcase">
+      <div class="showcase-card">
+        <div class="code">课程代码 · 04042603a</div>
+        <div class="name">数据库原理与应用</div>
+        <p class="tagline"><strong>核心理念：</strong>「以 DB 为体、AI 为用、协作为核心」。立足人工智能时代，融合 AI 工具与数据库技术，培养学生兼具数据库系统理论与实践应用能力。</p>
+
+        <div class="unit-list">
+          <div class="unit">
+            <div class="unit-num">01</div>
+            <div><div class="unit-name">数据库概述</div><div class="unit-meta">目标1 · 4 学时</div></div>
+            <div class="unit-hours">4h</div>
+          </div>
+          <div class="unit">
+            <div class="unit-num">02</div>
+            <div><div class="unit-name">关系模型</div><div class="unit-meta">目标1 · 6 学时</div></div>
+            <div class="unit-hours">6h</div>
+          </div>
+          <div class="unit">
+            <div class="unit-num">03</div>
+            <div><div class="unit-name">SQL 语言</div><div class="unit-meta">目标2 · 10 学时</div></div>
+            <div class="unit-hours">10h</div>
+          </div>
+          <div class="unit">
+            <div class="unit-num">04</div>
+            <div><div class="unit-name">数据库安全与完整性</div><div class="unit-meta">目标2 · 4 学时</div></div>
+            <div class="unit-hours">4h</div>
+          </div>
+          <div class="unit">
+            <div class="unit-num">05</div>
+            <div><div class="unit-name">嵌入式 SQL 与 Python</div><div class="unit-meta">目标3 · 4 学时</div></div>
+            <div class="unit-hours">4h</div>
+          </div>
+          <div class="unit">
+            <div class="unit-num">06</div>
+            <div><div class="unit-name">关系数据库设计理论</div><div class="unit-meta">目标3 · 10 学时</div></div>
+            <div class="unit-hours">10h</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview pane -->
+      <div class="preview-pane">
+        <div class="preview-head">
+          <span class="live"></span>
+          课程设计文档.md
+        </div>
+        <div class="preview-body">
+          <div class="doc-title">《数据库原理与应用》课程教学大纲</div>
+          <div class="doc-sub">课程代码：04042603a · 3 学分 · 48 学时 · 本科</div>
+
+          <table class="doc-table">
+            <tr><th>课程名称</th><td>数据库原理与应用</td></tr>
+            <tr><th>课程代码</th><td>04042603a</td></tr>
+            <tr><th>学  分</th><td>3 学分（理论 38 + 实验 10）</td></tr>
+            <tr><th>授课专业</th><td>信息管理 / 信息系统 / 数据管理</td></tr>
+            <tr><th>先修课程</th><td>高级语言程序设计、Python</td></tr>
+          </table>
+
+          <h3>一、课程定位</h3>
+          <p>以 <strong>DB 为体、AI 为用、协作为核心</strong>，立足人工智能时代，培养兼具数据库系统理论与实践应用能力的高素质人才。</p>
+          <p><span class="tag">AI 融合</span><span class="tag ai">NL2SQL</span><span class="tag">OBE</span><span class="tag sipin">⌛ 思政预留位</span></p>
+
+          <h3>二、课程目标</h3>
+          <p><strong>课程目标 1（知识目标）</strong><br>掌握数据库基本概念、数据模型、关系模型及关系代数等知识。</p>
+          <p><strong>课程目标 2（能力目标）</strong><br>掌握 SQL 语言的 DDL、DML 使用，能独立完成复杂数据查询与视图操作。</p>
+          <p><strong>课程目标 3（素养目标）</strong><br>掌握嵌入式 SQL、游标及存储过程的使用；结合 AI 工具辅助数据库设计。</p>
+
+          <h3>三、教学内容与学时分配</h3>
+          <h4>第一章 · 数据库概述（4 学时）</h4>
+          <ul>
+            <li>数据库系统的应用价值</li>
+            <li>数据库的定义与基本概念</li>
+            <li>数据库系统的标准体系结构</li>
+            <li>数据库系统在 AI 时代的生态</li>
+          </ul>
+          <p>思政预留：<span class="placeholder">⌛ 思政案例库接入后自动填充</span></p>
+
+          <h4>第二章 · 关系模型（6 学时）</h4>
+          <ul>
+            <li>关系数据库的逻辑结构</li>
+            <li>关系的定义、性质与基本操作</li>
+            <li>关系完整性约束</li>
+            <li>关系代数的五大基本操作</li>
+          </ul>
+          <div class="sql">π name, age (σ age≥18 ∧ dept='IS' (Student))</div>
+
+          <h4>第三章 · SQL 语言（10 学时）</h4>
+          <ul>
+            <li>SQL 语言的功能特点与体系结构</li>
+            <li>数据定义（DDL）</li>
+            <li>SQL 简单查询 / 连接查询</li>
+            <li>数据更新（DML）</li>
+            <li>NL2SQL 人机对比</li>
+            <li>实验 1：SQL 查询</li>
+          </ul>
+          <div class="sql"><span style="color:#2B5F8A;font-weight:600">SELECT</span> s.name, c.title, sc.grade
+<span style="color:#2B5F8A;font-weight:600">FROM</span> Student s
+<span style="color:#2B5F8A;font-weight:600">JOIN</span> SC sc <span style="color:#2B5F8A;font-weight:600">ON</span> s.sid = sc.sid
+<span style="color:#2B5F8A;font-weight:600">JOIN</span> Course c <span style="color:#2B5F8A;font-weight:600">ON</span> sc.cid = c.cid
+<span style="color:#2B5F8A;font-weight:600">WHERE</span> sc.grade >= <span style="color:#3A8A5E">85</span>;</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKFLOW — 两步流程 -->
+<section class="section" id="workflow">
+  <div class="wrap">
+    <div class="section-tag">工作流</div>
+    <h2 class="section-title">两步，从需求到定稿</h2>
+    <p class="section-sub">先自动生成初版任务书，教师优化后输出对比报告 + 定稿。</p>
+
+    <div class="workflow" style="grid-template-columns: 1fr 60px 1fr;">
+      <div class="step">
+        <div class="step-icon">①</div>
+        <div class="step-num">STEP 01 — 自动生成</div>
+        <h3 class="step-title">录入个性需求 →<br>出初版任务书</h3>
+        <p class="step-desc">
+          教师填写：学生维度（专业/班级/分层）、教学维度（重点/考核/项目）、资源维度（DB 环境/教材）<br>
+          → 系统整合固定大纲 + 思政特点 → 生成<strong>课程设计任务书（初版）</strong>
+        </p>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--accent);font-weight:300;">→</div>
+
+      <div class="step">
+        <div class="step-icon">②</div>
+        <div class="step-num">STEP 02 — 教师优化</div>
+        <h3 class="step-title">录入优化需求 →<br>出报告 + 定稿</h3>
+        <p class="step-desc">
+          教师逐条提出修改意见 → 系统输出三份文件：<br>
+          <strong>①</strong> 优化总结报告（简述改了什么）<br>
+          <strong>②</strong> 改动对比表（原内容 / 改后 / 改因）<br>
+          <strong>③</strong> 课程设计任务书（定稿）
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DROP ZONE -->
+<section class="section" style="padding-top:0;">
+  <div class="wrap">
+    <div class="section-tag">文件拖入</div>
+    <h2 class="section-title">拖拽文档，即可开始</h2>
+    <p class="section-sub">支持拖拽 .docx / .pdf / .json 文件到下方区域。</p>
+
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-zone-icon">📂</div>
+      <div class="drop-zone-title">拖拽文档到此处</div>
+      <div class="drop-zone-sub">或点击选择文件 · 支持 docx / pdf / json</div>
+      <div class="drop-zone-files">
+        <div class="drop-file">
+          <span class="icon">📘</span>
+          <div><div class="name">理论大纲</div><div class="type">.docx</div></div>
+        </div>
+        <div class="drop-file">
+          <span class="icon">📕</span>
+          <div><div class="name">课设大纲</div><div class="type">.docx</div></div>
+        </div>
+        <div class="drop-file">
+          <span class="icon">📗</span>
+          <div><div class="name">思政参考</div><div class="type">.pdf</div></div>
+        </div>
+        <div class="drop-file">
+          <span class="icon">📋</span>
+          <div><div class="name">个性需求</div><div class="type">.json</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 个性需求示例 -->
+<section class="section" style="padding-top:0;">
+  <div class="wrap">
+    <div class="section-tag">个性需求示例</div>
+    <h2 class="section-title">教师可参考此格式，填写个性化需求</h2>
+    <p class="section-sub">上传 .json 文件或直接复制下方内容修改。三个维度按需填写，不填则使用默认值。</p>
+
+    <div class="drop-zone" onclick="alert('文件选择在实现阶段启用')" style="cursor:default;margin-top:var(--s-5)">
+      <div style="text-align:left;max-width:800px;margin:0 auto">
+        <pre style="font-family:var(--font-mono);font-size:12px;line-height:1.65;color:var(--text);white-space:pre-wrap;text-align:left;background:var(--bg-2);padding:var(--s-5);border-radius:var(--r-md);border:1px solid var(--border)">
+<span style="color:var(--text-3)">// 课程设计任务书 · 个性化需求示例
+// 学生 · 教学 · 资源 三维度
+// 不填的字段使用大纲默认值</span>
+{
+  <span style="color:var(--accent);font-weight:600">"students"</span>: {
+    <span style="color:var(--accent)">"major"</span>: <span style="color:var(--gold)">"信息管理与信息系统"</span>,
+    <span style="color:var(--accent)">"class"</span>: <span style="color:var(--gold)">"信管 2023-1 班"</span>,
+    <span style="color:var(--accent)">"count"</span>: 42,
+    <span style="color:var(--accent)">"knowledge_base"</span>: <span style="color:var(--gold)">""</span>,       <span style="color:var(--text-3)">// 留空 = 按大纲默认</span>
+    <span style="color:var(--accent)">"needs_grouping"</span>: false              <span style="color:var(--text-3)">// 是否按水平分层</span>
+  },
+  <span style="color:var(--accent);font-weight:600">"teaching"</span>: {
+    <span style="color:var(--accent)">"focus"</span>: <span style="color:var(--gold)">"动手实践"</span>,                  <span style="color:var(--text-3)">// 理论深度 / 动手实践 / 项目导向</span>
+    <span style="color:var(--accent)">"exam_preference"</span>: <span style="color:var(--gold)">""</span>,               <span style="color:var(--text-3)">// 考核侧重点</span>
+    <span style="color:var(--accent)">"project_theme"</span>: <span style="color:var(--gold)">"物资采购与库存管理"</span>
+  },
+  <span style="color:var(--accent);font-weight:600">"resources"</span>: {
+    <span style="color:var(--accent)">"db_environment"</span>: <span style="color:var(--gold)">"SQL Server 2022"</span>,
+    <span style="color:var(--accent)">"textbook"</span>: <span style="color:var(--gold)">"《数据库系统概论（第6版）》"</span>,
+    <span style="color:var(--accent)">"reference_books"</span>: [
+      <span style="color:var(--gold)">"《数据库系统概念》"</span>,
+      <span style="color:var(--gold)">"《数据库系统原理及应用教程（第5版）》"</span>
+    ]
+  }
+}</pre>
+        <div style="display:flex;gap:var(--s-4);margin-top:var(--s-5);justify-content:flex-end">
+          <div class="nav-cta" onclick="alert('下载 .json 模板文件在实现阶段启用')">↓ 下载模板.json</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RULES ENGINE -->
+<section class="section" id="rules">
+  <div class="wrap">
+    <div class="section-tag">规则引擎</div>
+    <h2 class="section-title">三条核心规则，驱动文档生成</h2>
+    <p class="section-sub">不只是模板替换 — 规则引擎理解 OBE 教学理念，自动处理学时差异、学情差异、思政融合。</p>
+
+    <div class="rules-grid">
+      <div class="rule">
+        <div class="rule-num">RULE 01</div>
+        <h3 class="rule-title">学时自适应分档</h3>
+        <p class="rule-body">根据总学时自动调整章节数与每章字数。不同学时档位对应不同的课程密度。</p>
+        <pre class="rule-code">if hours >= 48:  units=6-8, words=2000-3000
+elif hours >= 32: units=4-6, words=1500-2000
+else:             units=3-4, words=1000-1500</pre>
+        <span class="rule-status active">● Active</span>
+      </div>
+
+      <div class="rule">
+        <div class="rule-num">RULE 02</div>
+        <h3 class="rule-title">专业差异适配</h3>
+        <p class="rule-body">当前学情为本科层次，不再按学情分层。改为按专业类别（信息管理 / 信息系统 / 数据管理 / 其它文科类专业）适配不同课程设计任务书模板和个性化需求策略。</p>
+        <pre class="rule-code">major = "信息管理" | "信息系统" | "数据管理" | "其它文科"
+→ 匹配对应专业的任务书模板
+→ 个性化需求预设值随专业切换</pre>
+        <span class="rule-status active">● Active</span>
+      </div>
+
+      <div class="rule">
+        <div class="rule-num">RULE 03</div>
+        <h3 class="rule-title">思政案例自动注入</h3>
+        <p class="rule-body">若提及课程思政，自动插入本校典型案例。每章 1-2 个点，"润物细无声"不硬贴标签。</p>
+        <pre class="rule-code">if unit.sipin:
+  match from sipin_cases.json
+  → insert 1-2 lines before end</pre>
+        <span class="rule-status planned">○ Planned · 案例库后续接入</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPORT -->
+<section class="section" id="export">
+  <div class="wrap">
+    <div class="section-tag">导出</div>
+    <h2 class="section-title">两种可提交的格式</h2>
+    <p class="section-sub">Markdown 可读可改可版本管理，Docx 直接提交教务处。</p>
+
+    <div class="export-list">
+      <div class="export-item">
+        <div class="export-icon">.md</div>
+        <div>
+          <div class="export-name">Markdown</div>
+          <div class="export-meta">12 KB · UTF-8 · 适合二次编辑</div>
+        </div>
+        <div class="export-action">↓ 下载</div>
+      </div>
+      <div class="export-item">
+        <div class="export-icon" style="color:var(--accent);border-color:var(--accent)">.docx</div>
+        <div>
+          <div class="export-name">Word 文档</div>
+          <div class="export-meta">Microsoft Word 2007+ · 可直接提交</div>
+        </div>
+        <div class="export-action">↓ 下载</div>
+      </div>
+      <div class="export-item">
+        <div class="export-icon" style="color:var(--gold);border-color:var(--gold)">.json</div>
+        <div>
+          <div class="export-name">结构化数据</div>
+          <div class="export-meta">course-data/ · 可复用到下一门课</div>
+        </div>
+        <div class="export-action">↓ 下载</div>
+      </div>
+      <div class="export-item">
+        <div class="export-icon" style="color:var(--text-3);border-color:var(--border-strong)">.pdf</div>
+        <div>
+          <div class="export-name">PDF 即将上线</div>
+          <div class="export-meta">从 Docx 转换 · 预计下版本</div>
+        </div>
+        <div class="export-action" style="color:var(--text-3);border-color:var(--border-strong)">⌛ Soon</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="brand">
+      <div class="brand-mark">课</div>
+      <div class="brand-text"><strong>课程设计文档</strong>生成</div>
+    </div>
+    <div class="footer-meta">
+      © 2026 · 课程设计文档生成 · 原型 v0.2 · <a href="#">返回顶部 ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.unit').forEach(u => u.addEventListener('click', () => {
+  document.querySelector('#showcase').scrollIntoView({ behavior: 'smooth' });
+}));
+// Export click
+document.querySelectorAll('.export-item').forEach(item => {
+  item.addEventListener('click', () => alert('下载功能在实现阶段启用。本版本为设计原型。'));
+});
+
+// Drag & Drop
+const dropZone = document.getElementById('dropZone');
+if (dropZone) {
+  ['dragenter', 'dragover'].forEach(evt => {
+    dropZone.addEventListener(evt, e => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    dropZone.addEventListener(evt, e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+    });
+  });
+  dropZone.addEventListener('drop', e => {
+    const files = Array.from(e.dataTransfer.files);
+    const names = files.map(f => f.name).join('、');
+    dropZone.querySelector('.drop-zone-title').textContent = `已拖入 ${files.length} 个文件`;
+    dropZone.querySelector('.drop-zone-sub').textContent = names;
+  });
+  dropZone.addEventListener('click', () => {
+    alert('文件选择对话框在实现阶段启用。\n本版本为设计原型。');
+  });
+}
+
+console.log('课程设计任务书智能生成 · 设计原型 v0.3');
+</script>
+
+</body>
+</html>

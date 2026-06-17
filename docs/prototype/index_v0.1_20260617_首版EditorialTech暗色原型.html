@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CurriculumForge — 课程设计文档生成器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0E0E10; --bg-2: #16161A; --surface: #1A1A1F;
+  --surface-2: #22222A; --surface-3: #2C2C36;
+  --border: #2D2D33; --border-strong: #3A3A45;
+  --text: #FAFAFA; --text-2: #B4B4BD; --text-3: #6E6E78;
+  --gold: #C9A961; --gold-soft: #E8D5A3; --gold-deep: #8E7634;
+  --cyan: #4A9EFF; --violet: #B968F7; --green: #4ADE80;
+  --font-display: 'Fraunces','Noto Serif SC',Georgia,serif;
+  --font-body: 'Geist','Segoe UI',sans-serif;
+  --font-mono: 'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
+  --s-4:16px;--s-5:24px;--s-6:32px;--s-7:48px;--s-8:64px;--s-9:96px;
+  --r-sm:6px;--r-md:10px;--r-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);font-size:15px;line-height:1.55;color:var(--text);background:var(--bg)}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(90deg,rgba(255,255,255,0.012)1px,transparent 1px),linear-gradient(0deg,rgba(255,255,255,0.012)1px,transparent 1px);background-size:80px 80px;pointer-events:none;z-index:0}
+.wrap{max-width:1400px;margin:0 auto;padding:0 var(--s-7)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(14,14,16,0.75);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--font-display);font-size:19px;font-weight:600}
+.brand-mark{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));display:grid;place-items:center;font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--bg)}
+.brand .light{font-style:italic;font-weight:300;color:var(--gold)}
+.nav-cta{padding:8px 16px;border:1px solid var(--border-strong);border-radius:var(--r-sm);font-size:12.5px;color:var(--text);text-decoration:none}
+.hero{padding:var(--s-9)0 var(--s-8)}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--border);border-radius:100px;font-family:var(--font-mono);font-size:11px;color:var(--text-2);background:var(--surface);margin-bottom:var(--s-7)}
+.hero-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:var(--s-9)}
+.hero-title{font-family:var(--font-display);font-size:clamp(48px,7vw,96px);font-weight:500;line-height:0.95;letter-spacing:-0.035em}
+.hero-title .accent{font-style:italic;font-weight:300;color:var(--gold)}
+.hero-title .cn{display:block;font-family:var(--font-serif-cn);font-size:0.42em;font-weight:400;color:var(--text-2);margin-top:var(--s-5)}
+.hero-sub{font-size:16px;line-height:1.7;color:var(--text-2);max-width:580px;margin-top:var(--s-6)}
+.hero-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:var(--s-4) var(--s-5);border-bottom:1px solid var(--border);background:var(--bg-2);font-family:var(--font-mono);font-size:12px;color:var(--text-2)}
+.dots{display:flex;gap:6px}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--surface-3)}
+.dots span:nth-child(1){background:#FF5F57}
+.dots span:nth-child(2){background:#FEBC2E}
+.dots span:nth-child(3){background:#28C840}
+.card-body{padding:var(--s-5);font-family:var(--font-mono);font-size:12.5px;line-height:1.7;color:var(--text-2)}
+.card-body .k{color:var(--cyan)}
+.card-body .v{color:var(--text)}
+.card-body .s{color:var(--gold)}
+.card-body .c{color:var(--text-3)}
+.section{padding:var(--s-9)0}
+.section-tag{font-family:var(--font-mono);font-size:11px;color:var(--text-3);letter-spacing:0.15em;margin-bottom:var(--s-5)}
+.section-title{font-family:var(--font-display);font-size:clamp(36px,4.5vw,64px);font-weight:500;line-height:1.05}
+.section-title .italic{font-style:italic;font-weight:300;color:var(--gold)}
+.caps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-5);margin-top:var(--s-8)}
+.cap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-6)}
+.cap-num{font-family:var(--font-display);font-size:14px;color:var(--gold)}
+.cap-title{font-family:var(--font-display);font-size:26px;font-weight:500;margin-top:var(--s-4)}
+.cap-desc{font-size:13.5px;color:var(--text-2);line-height:1.7;margin-top:var(--s-4)}
+.showcase{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-7);margin-top:var(--s-8)}
+.showcase-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-7)}
+.preview-pane{background:#FAFAFA;color:#1A1A1A;border-radius:var(--r-lg);overflow:hidden}
+.preview-body{padding:var(--s-7);font-family:Georgia,serif;font-size:12.5px;line-height:1.75}
+.workflow{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-4);margin-top:var(--s-8)}
+.step{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-6)}
+.step-icon{width:40px;height:40px;border-radius:var(--r-md);background:var(--bg-2);border:1px solid var(--border);display:grid;place-items:center;font-family:var(--font-display);font-size:18px;color:var(--gold);margin-bottom:var(--s-4)}
+.step-title{font-family:var(--font-serif-cn);font-size:17px;font-weight:600;margin-top:var(--s-2)}
+.step-desc{font-size:12.5px;color:var(--text-2);line-height:1.65;margin-top:var(--s-3)}
+.export{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-7);margin-top:var(--s-8)}
+.footer{border-top:1px solid var(--border);padding:var(--s-8)0;margin-top:var(--s-9)}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.rise{animation:rise 0.8s cubic-bezier(0.2,0.8,0.2,1) backwards}
+.rise-1{animation-delay:0.1s}.rise-2{animation-delay:0.2s}.rise-3{animation-delay:0.3s}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="wrap nav-inner">
+<div class="brand"><div class="brand-mark">CF</div><div class="brand-text"><strong>Curriculum</strong><span class="light">Forge</span></div></div>
+<a href="#showcase" class="nav-cta">开始生成 →</a>
+</div></nav>
+
+<section class="hero"><div class="wrap">
+<div class="hero-tag rise rise-1"><span class="dot"></span><span>通用课程设计文档生成平台 · v0.1 设计原型</span></div>
+<div class="hero-grid">
+<div>
+<h1 class="hero-title rise rise-2">从<span class="accent">数据</span>到<span class="accent">文档</span><br>一份可提交的<br>课程设计.<span class="cn">课程设计文档生成器 · 以「数据库原理与应用」为示范</span></h1>
+<p class="hero-sub rise rise-3">数据驱动的课程设计文档生成平台。把教学大纲、教案、考核方案结构化为 JSON，按 OBE 教学理念、学情分层、学时分档规则，一键渲染为标准化的课程设计文档。</p>
+</div>
+<div class="hero-card rise rise-3">
+<div class="card-head"><div class="dots"><span></span><span></span><span></span></div><span>course_info.json</span></div>
+<div class="card-body"><span class="c">{</span><br>  <span class="k">"course_name"</span>: <span class="s">"数据库原理与应用"</span>,<br>  <span class="k">"course_code"</span>: <span class="s">"04042603a"</span>,<br>  <span class="k">"credits"</span>: <span class="v">3</span>,<br>  <span class="k">"total_hours"</span>: <span class="v">48</span>,<br>  <span class="k">"student_level"</span>: <span class="s">"undergraduate"</span>,<br>  <span class="k">"assessment"</span>: <span class="c">{ "平时"</span>: <span class="v">20</span>, <span class="s">"实验"</span>: <span class="v">20</span>, <span class="s">"期末"</span>: <span class="v">60</span> <span class="c">}</span><br><span class="c">}</span></div>
+</div></div></div></section>
+
+<section class="section" style="text-align:center;padding:var(--s-6) 0;border-top:1px solid var(--border)">
+<div class="wrap"><p style="color:var(--text-2);font-size:13px">⚠ 此为 v0.1 存档版 · 后续版本见 index_v0.2_* 及更高版本</p></div></section>
+
+<section><div class="wrap"><div class="section-tag">核心能力</div>
+<div class="caps">
+<div class="cap"><div class="cap-num">01</div><h3 class="cap-title">Data-Driven</h3><p class="cap-desc">课程信息、教学单元、思政案例库 — 所有内容写成 JSON。换课程只需替换数据文件。</p></div>
+<div class="cap"><div class="cap-num">02</div><h3 class="cap-title">Rule Engine</h3><p class="cap-desc">按学时自动分档（≥48/32-47/≤31），按学情自动分层，按 OBE 矩阵映射毕业要求。</p></div>
+<div class="cap"><div class="cap-num">03</div><h3 class="cap-title">MD + Docx</h3><p class="cap-desc">Markdown 预览可编辑，Docx 可直接提交教务处。</p></div>
+</div></div></section>
+
+<footer class="footer"><div class="wrap" style="text-align:center;color:var(--text-3);font-family:var(--font-mono);font-size:11px">
+© 2026 · CurriculumForge · v0.1 存档 · file:// ready</div></footer>
+</body>
+</html>
